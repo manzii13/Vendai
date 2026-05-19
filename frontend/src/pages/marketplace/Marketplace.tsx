@@ -90,22 +90,18 @@ export default function Marketplace() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
 
-            {/* Header */}
-            <div className="mb-8">
-                <div className="label mb-2">// MARKETPLACE</div>
+            <header className="page-header">
+                <span className="eyebrow">Marketplace</span>
                 <div className="flex items-end justify-between flex-wrap gap-4">
-                    <h1 className="font-display text-5xl text-white">
-                        ALL PRODUCTS<span className="text-gold-400">.</span>
-                    </h1>
-                    <span className="label text-[#444]">{pagination.total} PRODUCTS FOUND</span>
+                    <h1>Discover products</h1>
+                    <span className="text-sm text-slate-500 font-medium">{pagination.total} results</span>
                 </div>
-            </div>
+            </header>
 
-            {/* AI Search Bar */}
             <div className="card mb-8">
-                <div className="label mb-3">// AI SMART SEARCH</div>
+                <p className="label mb-3">Smart search</p>
                 <div className="flex gap-3">
                     <div className="flex-1 relative">
                         <input
@@ -114,7 +110,7 @@ export default function Marketplace() {
                             onChange={e => setSearch(e.target.value)}
                             onKeyDown={handleKeyDown}
                             className="input-field pr-10"
-                            placeholder='Try: "affordable sneakers" or "electronics under $100"'
+                            placeholder='Try: "affordable products  to your likings"'
                         />
                         {search && (
                             <button
@@ -126,7 +122,7 @@ export default function Marketplace() {
                     <button
                         onClick={handleAISearch}
                         disabled={aiLoading}
-                        className="flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 text-gold-400 px-5 py-3 rounded text-sm font-semibold hover:bg-gold-400/20 transition-all disabled:opacity-50 whitespace-nowrap"
+                        className="flex items-center gap-2 bg-brand-400/15 border border-brand-400/30 text-brand-400 px-5 py-3 rounded-xl text-sm font-semibold hover:bg-brand-400/25 transition-all disabled:opacity-50 whitespace-nowrap"
                     >
                         {aiLoading
                             ? <><span className="w-3 h-3 border border-gold-400 border-t-transparent rounded-full animate-spin" /> Searching...</>
@@ -144,7 +140,7 @@ export default function Marketplace() {
                 {/* AI Intent display */}
                 {aiIntent && (
                     <div className="mt-3 flex items-center gap-2">
-                        <span className="font-mono text-[10px] text-gold-400">AI UNDERSTOOD:</span>
+                        <span className="text-xs font-semibold text-brand-400">AI understood:</span>
                         <span className="text-[#888] text-xs italic">"{aiIntent}"</span>
                     </div>
                 )}
@@ -157,14 +153,11 @@ export default function Marketplace() {
 
                     {/* Categories */}
                     <div>
-                        <div className="label mb-3">// CATEGORIES</div>
+                        
                         <div className="space-y-1">
                             <button
                                 onClick={() => setActiveCategory('')}
-                                className={`w-full text-left px-3 py-2 rounded text-sm transition-all ${activeCategory === ''
-                                    ? 'bg-gold-400/10 text-gold-400 border border-gold-400/30'
-                                    : 'text-[#666] hover:text-white'
-                                    }`}
+                                className={`filter-chip ${activeCategory === '' ? 'filter-chip-active' : ''}`}
                             >
                                 All Categories
                             </button>
@@ -172,10 +165,7 @@ export default function Marketplace() {
                                 <button
                                     key={cat}
                                     onClick={() => setActiveCategory(cat)}
-                                    className={`w-full text-left px-3 py-2 rounded text-sm transition-all ${activeCategory === cat
-                                        ? 'bg-gold-400/10 text-gold-400 border border-gold-400/30'
-                                        : 'text-[#666] hover:text-white'
-                                        }`}
+                                    className={`filter-chip ${activeCategory === cat ? 'filter-chip-active' : ''}`}
                                 >
                                     {cat}
                                 </button>
@@ -185,18 +175,18 @@ export default function Marketplace() {
 
                     {/* Price Range */}
                     <div>
-                        <div className="label mb-3">// PRICE RANGE</div>
+                        
                         <div className="space-y-2">
                             <input
                                 type="number"
-                                placeholder="Min $"
+                                placeholder="Min rwf"
                                 value={priceRange.min}
                                 onChange={e => setPriceRange(p => ({ ...p, min: e.target.value }))}
                                 className="input-field text-sm py-2"
                             />
                             <input
                                 type="number"
-                                placeholder="Max $"
+                                placeholder="Max rwf"
                                 value={priceRange.max}
                                 onChange={e => setPriceRange(p => ({ ...p, max: e.target.value }))}
                                 className="input-field text-sm py-2"
@@ -206,16 +196,13 @@ export default function Marketplace() {
 
                     {/* Sort */}
                     <div>
-                        <div className="label mb-3">// SORT BY</div>
+                        
                         <div className="space-y-1">
                             {SORT_OPTIONS.map(opt => (
                                 <button
                                     key={opt.value}
                                     onClick={() => setSort(opt.value)}
-                                    className={`w-full text-left px-3 py-2 rounded text-sm transition-all ${sort === opt.value
-                                        ? 'bg-gold-400/10 text-gold-400 border border-gold-400/30'
-                                        : 'text-[#666] hover:text-white'
-                                        }`}
+                                    className={`filter-chip ${sort === opt.value ? 'filter-chip-active' : ''}`}
                                 >
                                     {opt.label}
                                 </button>
@@ -265,9 +252,9 @@ export default function Marketplace() {
                                         <button
                                             key={i}
                                             onClick={() => fetchProducts(i + 1)}
-                                            className={`w-9 h-9 rounded font-mono text-xs transition-all ${pagination.page === i + 1
-                                                ? 'bg-gold-400 text-black font-bold'
-                                                : 'border border-[#2a2a2a] text-[#666] hover:border-gold-400 hover:text-gold-400'
+                                            className={`w-9 h-9 rounded-lg text-xs font-semibold transition-all ${pagination.page === i + 1
+                                                ? 'bg-brand-400 text-surface-950'
+                                                : 'border border-surface-600 text-slate-500 hover:border-brand-400 hover:text-brand-400'
                                                 }`}
                                         >
                                             {i + 1}

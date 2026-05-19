@@ -20,17 +20,30 @@ const storage = multer_1.default.diskStorage({
     }
 });
 const fileFilter = (_req, file, cb) => {
-    const allowed = /jpeg|jpg|png|webp/;
-    const ext = allowed.test(path_1.default.extname(file.originalname).toLowerCase());
-    const mime = allowed.test(file.mimetype);
-    if (ext && mime)
+    // Check extension only — Windows sometimes sends wrong MIME types
+    const allowedExtensions = /\.(jpeg|jpg|png|webp|gif)$/i;
+    const extOk = allowedExtensions.test(path_1.default.extname(file.originalname));
+    // Also accept common image MIME types
+    const allowedMimes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+        'image/gif',
+        'application/octet-stream' // Windows sometimes sends this
+    ];
+    const mimeOk = allowedMimes.includes(file.mimetype);
+    if (extOk || mimeOk) {
         cb(null, true);
-    else
-        cb(new Error('Only images are allowed (jpeg, jpg, png, webp)'));
+    }
+    else {
+        console.log('❌ Rejected file:', file.originalname, 'MIME:', file.mimetype);
+        cb(null, false); // reject silently instead of throwing error
+    }
 };
 exports.upload = (0, multer_1.default)({
     storage,
     fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
+    limits: { fileSize: 10 * 1024 * 1024 } // increased to 10MB
 });
 //# sourceMappingURL=multer.js.map

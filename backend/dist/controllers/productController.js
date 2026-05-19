@@ -1,8 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCategories = exports.aiSmartSearch = exports.aiGenerateDescription = exports.getMyProducts = exports.deleteProduct = exports.updateProduct = exports.createProduct = exports.getProduct = exports.getProducts = void 0;
-const aiServices_1 = require("../services/aiServices");
-const prisma_1 = require("../utils/prisma");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { generateProductDescription, generateSmartSearch } = require('../services/aiServices');
+const prisma_1 = __importDefault(require("../utils/prisma"));
 const getProductId = (req) => {
     const id = req.params.id;
     return Array.isArray(id) ? id[0] : id;
@@ -29,7 +33,7 @@ const getProducts = async (req, res) => {
             ];
         }
         const [products, total] = await Promise.all([
-            prisma_1.prisma.product.findMany({
+            prisma_1.default.product.findMany({
                 where,
                 skip,
                 take: parseInt(limit),
@@ -38,7 +42,7 @@ const getProducts = async (req, res) => {
                 },
                 orderBy: { createdAt: 'desc' }
             }),
-            prisma_1.prisma.product.count({ where })
+            prisma_1.default.product.count({ where })
         ]);
         res.json({
             products,
@@ -58,7 +62,7 @@ exports.getProducts = getProducts;
 // GET /api/products/:id
 const getProduct = async (req, res) => {
     try {
-        const product = await prisma_1.prisma.product.findUnique({
+        const product = await prisma_1.default.product.findUnique({
             where: { id: getProductId(req) },
             include: {
                 vendor: { select: { id: true, storeName: true, logo: true, description: true } },
@@ -83,7 +87,7 @@ exports.getProduct = getProduct;
 // POST /api/products — vendor creates product
 const createProduct = async (req, res) => {
     try {
-        const vendor = await prisma_1.prisma.vendor.findUnique({ where: { userId: req.user.userId } });
+        const vendor = await prisma_1.default.vendor.findUnique({ where: { userId: req.user.userId } });
         if (!vendor) {
             res.status(403).json({ message: 'Vendor profile not found' });
             return;
@@ -95,7 +99,7 @@ const createProduct = async (req, res) => {
         const { name, description, price, stock, category, tags } = req.body;
         const files = req.files;
         const images = files ? files.map(f => `/uploads/products/${f.filename}`) : [];
-        const product = await prisma_1.prisma.product.create({
+        const product = await prisma_1.default.product.create({
             data: {
                 vendorId: vendor.id,
                 name,
@@ -118,13 +122,13 @@ exports.createProduct = createProduct;
 // PUT /api/products/:id
 const updateProduct = async (req, res) => {
     try {
-        const vendor = await prisma_1.prisma.vendor.findUnique({ where: { userId: req.user.userId } });
+        const vendor = await prisma_1.default.vendor.findUnique({ where: { userId: req.user.userId } });
         if (!vendor) {
             res.status(403).json({ message: 'Not a vendor' });
             return;
         }
         const productId = getProductId(req);
-        const product = await prisma_1.prisma.product.findUnique({ where: { id: productId } });
+        const product = await prisma_1.default.product.findUnique({ where: { id: productId } });
         if (!product || product.vendorId !== vendor.id) {
             res.status(403).json({ message: 'Not authorized' });
             return;
@@ -132,7 +136,7 @@ const updateProduct = async (req, res) => {
         const { name, description, price, stock, category, tags } = req.body;
         const files = req.files;
         const newImages = files?.length ? files.map(f => `/uploads/products/${f.filename}`) : product.images;
-        const updated = await prisma_1.prisma.product.update({
+        const updated = await prisma_1.default.product.update({
             where: { id: productId },
             data: {
                 name, description,
@@ -153,18 +157,18 @@ exports.updateProduct = updateProduct;
 // DELETE /api/products/:id
 const deleteProduct = async (req, res) => {
     try {
-        const vendor = await prisma_1.prisma.vendor.findUnique({ where: { userId: req.user.userId } });
+        const vendor = await prisma_1.default.vendor.findUnique({ where: { userId: req.user.userId } });
         if (!vendor) {
             res.status(403).json({ message: 'Not a vendor' });
             return;
         }
         const productId = getProductId(req);
-        const product = await prisma_1.prisma.product.findUnique({ where: { id: productId } });
+        const product = await prisma_1.default.product.findUnique({ where: { id: productId } });
         if (!product || product.vendorId !== vendor.id) {
             res.status(403).json({ message: 'Not authorized' });
             return;
         }
-        await prisma_1.prisma.product.delete({ where: { id: productId } });
+        await prisma_1.default.product.delete({ where: { id: productId } });
         res.json({ message: 'Product deleted' });
     }
     catch {
@@ -175,12 +179,12 @@ exports.deleteProduct = deleteProduct;
 // GET /api/products/vendor/mine — vendor's own products
 const getMyProducts = async (req, res) => {
     try {
-        const vendor = await prisma_1.prisma.vendor.findUnique({ where: { userId: req.user.userId } });
+        const vendor = await prisma_1.default.vendor.findUnique({ where: { userId: req.user.userId } });
         if (!vendor) {
             res.status(403).json({ message: 'Not a vendor' });
             return;
         }
-        const products = await prisma_1.prisma.product.findMany({
+        const products = await prisma_1.default.product.findMany({
             where: { vendorId: vendor.id },
             orderBy: { createdAt: 'desc' }
         });
@@ -199,7 +203,7 @@ const aiGenerateDescription = async (req, res) => {
             res.status(400).json({ message: 'productName and category are required' });
             return;
         }
-        const result = await (0, aiServices_1.generateProductDescription)(productName, category, keywords || '');
+        const result = await generateProductDescription(productName, category, keywords || '');
         res.json(result);
     }
     catch (err) {
@@ -216,14 +220,14 @@ const aiSmartSearch = async (req, res) => {
             res.status(400).json({ message: 'Query required' });
             return;
         }
-        const categories = await prisma_1.prisma.product.findMany({
+        const categories = await prisma_1.default.product.findMany({
             select: { category: true },
             distinct: ['category']
         });
         const catList = categories.map(c => c.category);
-        const parsed = await (0, aiServices_1.generateSmartSearch)(q, catList);
+        const parsed = await generateSmartSearch(q, catList);
         // Now search with the AI-extracted keywords
-        const products = await prisma_1.prisma.product.findMany({
+        const products = await prisma_1.default.product.findMany({
             where: {
                 OR: [
                     ...parsed.keywords.map((kw) => ({ name: { contains: kw, mode: 'insensitive' } })),
@@ -245,7 +249,7 @@ exports.aiSmartSearch = aiSmartSearch;
 // GET /api/products/categories
 const getCategories = async (_req, res) => {
     try {
-        const raw = await prisma_1.prisma.product.findMany({
+        const raw = await prisma_1.default.product.findMany({
             select: { category: true },
             distinct: ['category']
         });

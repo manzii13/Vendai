@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMe = exports.login = exports.register = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jwt_1 = require("../utils/jwt");
-const prisma_1 = require("../utils/prisma");
+const prisma_1 = __importDefault(require("../utils/prisma"));
 const register = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
@@ -14,13 +14,13 @@ const register = async (req, res) => {
             res.status(400).json({ message: 'Name, email and password are required' });
             return;
         }
-        const existing = await prisma_1.prisma.user.findUnique({ where: { email } });
+        const existing = await prisma_1.default.user.findUnique({ where: { email } });
         if (existing) {
             res.status(409).json({ message: 'Email already registered' });
             return;
         }
         const hashed = await bcryptjs_1.default.hash(password, 12);
-        const user = await prisma_1.prisma.user.create({
+        const user = await prisma_1.default.user.create({
             data: {
                 name,
                 email,
@@ -30,7 +30,7 @@ const register = async (req, res) => {
         });
         // If registering as vendor, create vendor profile
         if (role === 'VENDOR') {
-            await prisma_1.prisma.vendor.create({
+            await prisma_1.default.vendor.create({
                 data: {
                     userId: user.id,
                     storeName: `${name}'s Store`,
@@ -63,7 +63,7 @@ const login = async (req, res) => {
             res.status(400).json({ message: 'Email and password are required' });
             return;
         }
-        const user = await prisma_1.prisma.user.findUnique({ where: { email } });
+        const user = await prisma_1.default.user.findUnique({ where: { email } });
         if (!user) {
             res.status(401).json({ message: 'Invalid credentials' });
             return;
@@ -93,7 +93,7 @@ const login = async (req, res) => {
 exports.login = login;
 const getMe = async (req, res) => {
     try {
-        const user = await prisma_1.prisma.user.findUnique({
+        const user = await prisma_1.default.user.findUnique({
             where: { id: req.user.userId },
             include: { vendor: true }
         });

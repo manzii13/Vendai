@@ -1,22 +1,34 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
     headers: { 'Content-Type': 'application/json' }
 });
 
-// Attach token to every request automatically
+function getStoredToken(): string | null {
+    const direct = localStorage.getItem('token');
+    if (direct) return direct;
+    try {
+        const raw = localStorage.getItem('auth-storage');
+        if (!raw) return null;
+        const parsed = JSON.parse(raw) as { state?: { token?: string } };
+        return parsed.state?.token ?? null;
+    } catch {
+        return null;
+    }
+}
+
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
+    const token = getStoredToken();
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
 });
 
-// Handle 401 globally
 api.interceptors.response.use(
     (res) => res,
     (err) => {
-        if (err.response?.status === 401) {
+        const status = err.response?.status;
+        if (status === 401 && !window.location.pathname.startsWith('/login')) {
             localStorage.removeItem('token');
             window.location.href = '/login';
         }

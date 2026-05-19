@@ -21,8 +21,12 @@ export default function CartSidebar({ open, onClose }: Props) {
             )}
 
             {/* Sidebar */}
-            <div className={`fixed top-0 right-0 h-full w-full max-w-md z-50 flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'
-                }`}>
+            <div
+                className={`fixed top-0 right-0 h-full w-full max-w-md z-50 flex flex-col transition-transform duration-300 ${open
+                    ? 'translate-x-0 pointer-events-auto'
+                    : 'translate-x-full pointer-events-none'
+                    }`}
+            >
 
                 {/* Background Image with overlay */}
                 <div className="absolute inset-0 z-0">
@@ -40,12 +44,12 @@ export default function CartSidebar({ open, onClose }: Props) {
                 </div>
 
                 {/* Border */}
-                <div className="absolute inset-0 border-l border-[#1a1a1a] pointer-events-none z-10" />
+                <div className="absolute inset-0 border-l border-surface-600/50 pointer-events-none z-10" />
 
                 {/* Header */}
                 <div className="relative z-20 flex items-center justify-between p-6 border-b border-[#ffffff08]">
                     <div>
-                        <div className="label mb-1">// YOUR CART</div>
+
                         <div className="font-display text-2xl text-white">
                             {count()} ITEM{count() !== 1 ? 'S' : ''}
                         </div>

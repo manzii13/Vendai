@@ -8,7 +8,7 @@ const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
 const client = new sdk_1.default({ apiKey: process.env.ANTHROPIC_API_KEY });
 const generateProductDescription = async (productName, category, keywords) => {
     const message = await client.messages.create({
-        model: 'claude-opus-4-5',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 500,
         messages: [
             {
@@ -34,7 +34,7 @@ Respond ONLY with valid JSON in this exact format, no markdown:
 exports.generateProductDescription = generateProductDescription;
 const generateVendorInsights = async (storeName, totalSales, topProducts, recentOrders) => {
     const message = await client.messages.create({
-        model: 'claude-opus-4-5',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 400,
         messages: [
             {
@@ -44,7 +44,7 @@ const generateVendorInsights = async (storeName, totalSales, topProducts, recent
 Store: ${storeName}
 Total Sales: $${totalSales}
 Recent Orders (30 days): ${recentOrders}
-Top Products: ${topProducts.join(', ')}
+Top Products: ${topProducts.join(', ') || 'None yet'}
 
 Give 3 short, actionable business insights in plain text. Each insight on a new line starting with "•". Be specific and data-driven. Max 150 words total.`
             }
@@ -55,7 +55,7 @@ Give 3 short, actionable business insights in plain text. Each insight on a new 
 exports.generateVendorInsights = generateVendorInsights;
 const generateSmartSearch = async (query, availableCategories) => {
     const message = await client.messages.create({
-        model: 'claude-opus-4-5',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 200,
         messages: [
             {
@@ -63,7 +63,7 @@ const generateSmartSearch = async (query, availableCategories) => {
                 content: `Parse this product search query for an e-commerce marketplace.
 
 Query: "${query}"
-Available categories: ${availableCategories.join(', ')}
+Available categories: ${availableCategories.join(', ') || 'None'}
 
 Respond ONLY with valid JSON, no markdown:
 {

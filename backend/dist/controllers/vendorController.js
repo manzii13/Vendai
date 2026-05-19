@@ -1,12 +1,19 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAIInsights = exports.getVendorStats = exports.getVendor = exports.getVendors = void 0;
-const aiServices_1 = require("../services/aiServices");
-const prisma_1 = require("../utils/prisma");
+const generateVendorInsights = async (storeName, totalRevenue, topProducts, recentOrderCount) => {
+    const top = topProducts.filter(Boolean).slice(0, 3).join(', ') || 'No top products yet';
+    const momentum = recentOrderCount > 0 ? 'Some recent activity' : 'No recent activity';
+    return `Store ${storeName}: revenue $${totalRevenue.toFixed(2)}. ${momentum}. Top products: ${top}.`;
+};
+const prisma_1 = __importDefault(require("../utils/prisma"));
 // GET /api/vendors
 const getVendors = async (_req, res) => {
     try {
-        const vendors = await prisma_1.prisma.vendor.findMany({
+        const vendors = await prisma_1.default.vendor.findMany({
             where: { approved: true },
             include: {
                 user: { select: { name: true, email: true } },
@@ -28,7 +35,7 @@ const getVendor = async (req, res) => {
             res.status(400).json({ message: 'Vendor id is required' });
             return;
         }
-        const vendor = await prisma_1.prisma.vendor.findUnique({
+        const vendor = await prisma_1.default.vendor.findUnique({
             where: { id: vendorId },
             include: {
                 user: { select: { name: true } },
@@ -49,16 +56,16 @@ exports.getVendor = getVendor;
 // GET /api/vendors/dashboard/stats
 const getVendorStats = async (req, res) => {
     try {
-        const vendor = await prisma_1.prisma.vendor.findUnique({ where: { userId: req.user.userId } });
+        const vendor = await prisma_1.default.vendor.findUnique({ where: { userId: req.user.userId } });
         if (!vendor) {
             res.status(404).json({ message: 'Vendor not found' });
             return;
         }
-        const products = await prisma_1.prisma.product.findMany({ where: { vendorId: vendor.id } });
+        const products = await prisma_1.default.product.findMany({ where: { vendorId: vendor.id } });
         const productIds = products.map(p => p.id);
-        const orderItems = await prisma_1.prisma.orderItem.findMany({
+        const orderItems = await prisma_1.default.orderItem.findMany({
             where: { productId: { in: productIds } },
-            include: { order: true, product: true }
+            include: { product: true, order: true }
         });
         const totalRevenue = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
         const totalOrders = new Set(orderItems.map(i => i.orderId)).size;
@@ -100,14 +107,14 @@ exports.getVendorStats = getVendorStats;
 // GET /api/vendors/dashboard/ai-insights
 const getAIInsights = async (req, res) => {
     try {
-        const vendor = await prisma_1.prisma.vendor.findUnique({ where: { userId: req.user.userId } });
+        const vendor = await prisma_1.default.vendor.findUnique({ where: { userId: req.user.userId } });
         if (!vendor) {
             res.status(404).json({ message: 'Vendor not found' });
             return;
         }
-        const products = await prisma_1.prisma.product.findMany({ where: { vendorId: vendor.id } });
+        const products = await prisma_1.default.product.findMany({ where: { vendorId: vendor.id } });
         const productIds = products.map(p => p.id);
-        const orderItems = await prisma_1.prisma.orderItem.findMany({
+        const orderItems = await prisma_1.default.orderItem.findMany({
             where: { productId: { in: productIds } },
             include: { order: true, product: true }
         });
@@ -115,8 +122,10 @@ const getAIInsights = async (req, res) => {
         const topProducts = products.slice(0, 3).map(p => p.name);
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        const recentCount = new Set(orderItems.filter(i => new Date(i.order?.createdAt ?? 0) > thirtyDaysAgo).map(i => i.orderId)).size;
-        const insights = await (0, aiServices_1.generateVendorInsights)(vendor.storeName, totalRevenue, topProducts, recentCount);
+        const recentCount = new Set(orderItems
+            .filter(i => new Date(i.order.createdAt) > thirtyDaysAgo)
+            .map(i => i.orderId)).size;
+        const insights = await generateVendorInsights(vendor.storeName, totalRevenue, topProducts, recentCount);
         res.json({ insights });
     }
     catch (err) {

@@ -118,7 +118,7 @@ export default function EditProduct() {
     return (
         <div className="max-w-4xl mx-auto px-6 py-12">
             <div className="mb-10">
-                <div className="label mb-2">// VENDOR PORTAL</div>
+                
                 <h1 className="font-display text-5xl text-white">EDIT PRODUCT<span className="text-gold-400">.</span></h1>
             </div>
 
@@ -130,7 +130,7 @@ export default function EditProduct() {
                         {/* Existing Images */}
                         {existingImages.length > 0 && (
                             <div className="card">
-                                <div className="label mb-3">// CURRENT PHOTOS</div>
+                                
                                 <div className="grid grid-cols-3 gap-2">
                                     {existingImages.map((src, i) => (
                                         <div key={i} className="relative aspect-square">
@@ -144,7 +144,7 @@ export default function EditProduct() {
 
                         {/* New Images */}
                         <div className="card">
-                            <div className="label mb-3">// REPLACE PHOTOS</div>
+                            <div className="label mb-3">REPLACE PHOTOS</div>
                             <ImageUploader
                                 images={newImages} previews={newPreviews}
                                 onChange={(f, p) => { setNewImages(f); setNewPreviews(p); }}
@@ -157,7 +157,7 @@ export default function EditProduct() {
 
                         {/* Price & Stock */}
                         <div className="card space-y-4">
-                            <div className="label mb-2">// PRICING & STOCK</div>
+                            <div className="label mb-2">PRICING & STOCK</div>
                             <div>
                                 <label className="label mb-2 block">Price (RWF)</label>
                                 <div className="relative">
@@ -175,7 +175,7 @@ export default function EditProduct() {
                     {/* Right */}
                     <div className="lg:col-span-3 space-y-6">
                         <div className="card space-y-4">
-                            <div className="label mb-2">// PRODUCT DETAILS</div>
+                            <div className="label mb-2">PRODUCT DETAILS</div>
                             <div>
                                 <label className="label mb-2 block">Category</label>
                                 <select value={form.category} onChange={update('category')} className="input-field" required>
@@ -195,7 +195,7 @@ export default function EditProduct() {
 
                         <div className="card">
                             <div className="flex items-center justify-between mb-4">
-                                <div className="label">// DESCRIPTION</div>
+                                <div className="label">DESCRIPTION</div>
                                 <button type="button" onClick={handleAIGenerate} disabled={aiLoading}
                                     className="flex items-center gap-2 bg-gold-400/10 border border-gold-400/30 text-gold-400 px-4 py-2 rounded text-xs font-semibold hover:bg-gold-400/20 transition-all disabled:opacity-50">
                                     {aiLoading

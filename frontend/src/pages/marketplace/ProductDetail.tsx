@@ -191,7 +191,7 @@ export default function ProductDetail() {
 
                     {/* Vendor Info Card */}
                     <div className="card">
-                        <div className="label mb-3">// SOLD BY</div>
+                        
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-white font-semibold">{product.vendor?.storeName}</p>
@@ -214,7 +214,7 @@ export default function ProductDetail() {
             {/* Reviews */}
             {(product.reviews?.length ?? 0) > 0 && (
                 <div className="mt-16">
-                    <div className="label mb-6">// CUSTOMER REVIEWS ({product.reviews?.length ?? 0})</div>
+                    <div className="label mb-6">CUSTOMER REVIEWS ({product.reviews?.length ?? 0})</div>
                     <div className="grid md:grid-cols-2 gap-4">
                         {(product.reviews ?? []).map((review: NonNullable<Product['reviews']>[number]) => (
                             <div key={review.id} className="card">

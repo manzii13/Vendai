@@ -1,23 +1,31 @@
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import api from '../../services/api';
 
 const links = [
     { to: '/admin', label: 'Overview', icon: '◎', end: true },
-    { to: '/admin/vendors', label: 'Vendors', icon: '🏪' },
-    { to: '/admin/users', label: 'Users', icon: '👤' },
-    { to: '/admin/orders', label: 'Orders', icon: '📦' },
+    { to: '/admin/vendors', label: 'Vendors', badgeKey: 'pendingVendors' as const },
+    { to: '/admin/users', label: 'Users', },
+    { to: '/admin/orders', label: 'Orders' },
 ];
 
 export default function AdminLayout() {
-    return (
-        <div className="flex min-h-screen">
+    const [pendingVendors, setPendingVendors] = useState(0);
 
-            {/* Sidebar */}
-            <aside className="w-56 border-r border-[#1a1a1a] flex-shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
+    useEffect(() => {
+        api.get('/admin/stats')
+            .then(({ data }) => setPendingVendors(data?.stats?.pendingVendors ?? 0))
+            .catch(() => setPendingVendors(0));
+    }, []);
+
+    return (
+        <div className="flex min-h-[calc(100vh-4.25rem)] bg-surface-900/50">
+            <aside className="w-60 border-r border-surface-600/40 flex-shrink-0 sticky top-[4.25rem] h-[calc(100vh-4.25rem)] overflow-y-auto bg-surface-950/50">
                 <div className="p-6">
-                    <div className="label mb-1">// ADMIN</div>
-                    <div className="font-display text-xl text-white mb-6">
-                        CONTROL PANEL<span className="text-gold-400">.</span>
-                    </div>
+                    <p className="label mb-1">Administration</p>
+                    <h2 className="font-display text-xl font-bold text-white mb-6">
+                        Control <span className="text-brand-400">panel</span>
+                    </h2>
 
                     <nav className="space-y-1">
                         {links.map(link => (
@@ -26,25 +34,29 @@ export default function AdminLayout() {
                                 to={link.to}
                                 end={link.end}
                                 className={({ isActive }) =>
-                                    `flex items-center gap-3 px-3 py-2.5 rounded text-sm transition-all ${isActive
-                                        ? 'bg-gold-400/10 text-gold-400 border border-gold-400/20'
-                                        : 'text-[#666] hover:text-white hover:bg-[#111]'
+                                    `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
+                                        ? 'bg-brand-400/15 text-brand-400 border border-brand-400/25'
+                                        : 'text-slate-400 hover:text-white hover:bg-surface-800/80'
                                     }`
                                 }
                             >
                                 <span>{link.icon}</span>
-                                <span className="font-mono text-[11px] tracking-wider">{link.label.toUpperCase()}</span>
+                                <span>{link.label}</span>
+                                {link.badgeKey === 'pendingVendors' && pendingVendors > 0 && (
+                                    <span className="ml-auto text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-1.5 py-0.5 rounded-md">
+                                        {pendingVendors}
+                                    </span>
+                                )}
                             </NavLink>
                         ))}
                     </nav>
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 overflow-x-hidden">
+            <main className="flex-1 min-w-0 overflow-x-auto">
                 <Outlet />
             </main>
-
         </div>
     );
 }
+

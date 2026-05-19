@@ -62,7 +62,8 @@ export const getAllVendors = async (_req: Request, res: Response): Promise<void>
                 user: { select: { name: true, email: true, createdAt: true } },
                 _count: { select: { products: true } }
             },
-            orderBy: { createdAt: 'desc' }
+            // Pending approvals first, then newest
+            orderBy: [{ approved: 'asc' }, { createdAt: 'desc' }]
         });
         res.json({ vendors });
     } catch {

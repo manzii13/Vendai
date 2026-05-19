@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "prestart": "npm run build",
+    "start": "node dist/server.js",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "npx ts-node --project tsconfig.seed.json prisma/seed.ts",
+    "db:setup": "npm run db:migrate && npm run db:seed"
   },
   "keywords": [],
   "author": "",

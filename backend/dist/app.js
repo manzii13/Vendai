@@ -7,11 +7,15 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
+const orders_1 = __importDefault(require("./routes/orders"));
+const admin_1 = __importDefault(require("./routes/admin"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
+app.use('/api/orders', orders_1.default);
+app.use('/api/admin', admin_1.default);
 // Serve uploaded images as static files
 app.use('/uploads', express_1.default.static(path_1.default.join(__dirname, '../src/uploads')));
 // Routes

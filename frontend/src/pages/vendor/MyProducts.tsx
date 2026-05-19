@@ -39,7 +39,7 @@ export default function MyProducts() {
             {/* Header */}
             <div className="flex items-end justify-between mb-10">
                 <div>
-                    <div className="label mb-2">// VENDOR PORTAL</div>
+                    
                     <h1 className="font-display text-5xl text-white">
                         MY PRODUCTS<span className="text-gold-400">.</span>
                     </h1>

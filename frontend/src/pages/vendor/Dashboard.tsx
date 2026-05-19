@@ -63,7 +63,7 @@ export default function Dashboard() {
             {/* Header */}
             <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
                 <div>
-                    <div className="label mb-2">// VENDOR PORTAL</div>
+                    
                     <h1 className="font-display text-5xl text-white">
                         {stats?.storeName?.toUpperCase() || 'DASHBOARD'}
                         <span className="text-gold-400">.</span>
@@ -266,7 +266,7 @@ export default function Dashboard() {
 
                     {/* Store Health */}
                     <div className="card">
-                        <div className="label mb-4">// STORE HEALTH</div>
+                        
                         <div className="space-y-4">
                             {[
                                 {
@@ -306,7 +306,7 @@ export default function Dashboard() {
 
                     {/* Tips */}
                     <div className="card border-[#1a1a1a]">
-                        <div className="label mb-3">// PRO TIPS</div>
+                        
                         <div className="space-y-3">
                             {[
                                 'Add 5+ product photos to increase sales by 40%',

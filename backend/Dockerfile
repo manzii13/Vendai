@@ -3,7 +3,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-# RUN npx prisma generate
-# RUN npm run build
+# Prisma config reads DATABASE_URL at generate time — dummy value is fine for client generation
+ENV DATABASE_URL="postgresql://postgres:admin123@db:5432/marketplace"
+RUN npx prisma generate
 EXPOSE 5000
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

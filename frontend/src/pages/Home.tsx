@@ -1,85 +1,138 @@
 import { Link } from 'react-router-dom';
 
+const STATS = [
+    { value: '2,400+', label: 'Active vendors' },
+    { value: '98K', label: 'Products listed' },
+    { value: '99.9%', label: 'Platform uptime' },
+    { value: 'AI', label: 'Smart search' },
+];
+
+const FEATURES = [
+    {
+        icon: '✦',
+        title: 'AI product search',
+        desc: 'Describe what you need in plain language and find the right products across every store.',
+    },
+    {
+        icon: '📊',
+        title: 'Vendor analytics',
+        desc: 'Real-time sales, stock insights, and AI recommendations to grow your business.',
+    },
+    {
+        icon: '🛒',
+        title: 'Unified checkout',
+        desc: 'Shop from multiple vendors in one cart with simple order tracking in RWF.',
+    },
+];
+
+const CATEGORIES = ['Electronics', 'Fashion', 'Home', 'Beauty', 'Sports', 'Groceries'];
+
 export default function Home() {
     return (
-        <div className="min-h-screen">
-
-            {/* Hero */}
-            <section className="relative min-h-[90vh] flex items-center">
-
-                {/* Background Image */}
+        <div>
+            <section className="relative min-h-[88vh] flex items-center overflow-hidden">
                 <div
                     className="absolute inset-0 z-0"
                     style={{
                         backgroundImage: 'url(/hero-bg0.png)',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
                     }}
                 />
+                <div className="absolute inset-0 z-10 bg-gradient-to-r from-surface-950 via-surface-950/85 to-surface-950/40" />
+                <div className="absolute inset-0 z-10 bg-mesh opacity-80" />
 
-                {/* Dark overlay so text stays readable */}
-                <div className="absolute inset-0 z-10 bg-gradient-to-r from-black via-black/50 to-black/20" />
+                <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-28 w-full">
+                    <span className="badge-brand mb-6">
+                        <span className="w-1.5 h-1.5 rounded-full bg-brand-400 animate-pulse mr-2 inline-block" />
+                        Rwanda&apos;s multi-vendor marketplace
+                    </span>
 
-                {/* Content */}
-                <div className="relative z-20 max-w-7xl mx-auto px-6 py-24">
-                    <div className="inline-flex items-center gap-2 bg-[#111]/80 border border-[#222] rounded-full px-4 py-2 mb-10">
-                        <span className="w-1.5 h-1.5 rounded-full bg-gold-400 animate-pulse" />
-                        <span className="font-mono text-[10px] text-gold-400 tracking-widest">
-                            WELCOME TO VENDXX..
+                    <h1 className="font-display text-[clamp(2.75rem,8vw,5.5rem)] font-extrabold leading-[1.05] text-white max-w-3xl mb-6">
+                        Shop smarter.
+                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-brand-300 to-brand-500">
+                            Sell faster.
                         </span>
-                    </div>
-
-                    <h1 className="font-display text-[clamp(4rem,10vw,9rem)] leading-none text-white mb-8">
-                        SMARTER<br />SHOPPING <span className="text-gold-400">STARTS</span><br />HERE
                     </h1>
 
-                    <p className="text-[#aaa] text-lg max-w-lg leading-relaxed mb-10">
-                        Explore, discover, and shop smarter with a new kind of marketplace built for the future.
+                    <p className="text-slate-300 text-lg max-w-xl leading-relaxed mb-10">
+                        Discover products from trusted local vendors, manage your store with AI tools, and checkout securely — all in one place.
                     </p>
 
-                    <div className="flex gap-4 flex-wrap">
+                    <div className="flex flex-wrap gap-4">
                         <Link to="/marketplace" className="btn-primary text-base px-8 py-4">
-                            Explore Marketplace →
+                            Browse marketplace
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
                         </Link>
                         <Link to="/register" className="btn-outline text-base px-8 py-4">
-                            Start Your Store
+                            Open your store
                         </Link>
                     </div>
                 </div>
             </section>
 
-            {/* Stats */}
-            <div className="border-t border-b border-[#1a1a1a]">
-                <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4">
-                    {[['2,400+', 'Active Vendors'], ['98K', 'Products Listed'], ['99.9%', 'Uptime'], ['AI', 'Powered Search']].map(([n, l], i) => (
-                        <div key={l} className={`py-8 px-6 ${i < 3 ? 'border-r border-[#1a1a1a]' : ''}`}>
-                            <div className="font-display text-4xl text-gold-400">{n}</div>
-                            <div className="label mt-1">{l}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Features */}
-            <section className="max-w-7xl mx-auto px-6 py-24">
-                <div className="label mb-4"></div>
-                <h2 className="section-title mb-16">WHY VENDXX<span className="text-gold-400">?</span></h2>
-                <div className="grid md:grid-cols-3 gap-4">
-                    {[
-                        { tag: '01', title: 'AI Product Search', desc: 'Smart search that understands natural language. Find exactly what you need across all vendors.' },
-                        { tag: '02', title: 'Vendor Analytics', desc: 'Real-time sales data, AI-powered insights, and revenue tracking for every vendor.' },
-                        { tag: '03', title: 'Multi-Vendor Cart', desc: 'Shop from multiple vendors in one cart. Seamless checkout with unified order tracking.' },
-                    ].map(f => (
-                        <div key={f.tag} className="card group hover:border-[#2a2a2a] transition-colors">
-                            <div className="label text-gold-400 mb-4">{f.tag}</div>
-                            <h3 className="text-white font-semibold text-lg mb-3">{f.title}</h3>
-                            <p className="text-[#555] text-sm leading-relaxed">{f.desc}</p>
+            <section className="border-y border-surface-600/40 bg-surface-950/80">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-2 lg:grid-cols-4 divide-x divide-surface-600/30">
+                    {STATS.map((s) => (
+                        <div key={s.label} className="stat-pill">
+                            <div className="font-display text-3xl md:text-4xl font-bold text-brand-400">{s.value}</div>
+                            <div className="text-sm text-slate-500 mt-1">{s.label}</div>
                         </div>
                     ))}
                 </div>
             </section>
 
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+                <p className="label mb-3">Popular categories</p>
+                <div className="flex flex-wrap gap-3">
+                    {CATEGORIES.map((cat) => (
+                        <Link
+                            key={cat}
+                            to="/marketplace"
+                            className="px-5 py-2.5 rounded-full bg-surface-800 border border-surface-600/50 text-sm font-medium text-slate-300 hover:border-brand-400/40 hover:text-brand-400 transition-all"
+                        >
+                            {cat}
+                        </Link>
+                    ))}
+                </div>
+            </section>
+
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
+                <div className="text-center max-w-2xl mx-auto mb-14">
+                    <p className="label mb-3">Why VendXX</p>
+                    <h2 className="section-title">Built for modern commerce</h2>
+                </div>
+                <div className="grid md:grid-cols-3 gap-6">
+                    {FEATURES.map((f) => (
+                        <div key={f.title} className="card-interactive group">
+                            <div className="w-12 h-12 rounded-2xl bg-brand-400/10 border border-brand-400/20 flex items-center justify-center text-xl mb-5 group-hover:shadow-glow transition-shadow">
+                                {f.icon}
+                            </div>
+                            <h3 className="text-white font-semibold text-lg mb-2">{f.title}</h3>
+                            <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-24">
+                <div className="relative overflow-hidden rounded-3xl border border-brand-400/20 bg-gradient-to-br from-surface-800 to-surface-900 p-10 md:p-14 text-center shadow-glow">
+                    <div className="absolute inset-0 bg-mesh opacity-50" />
+                    <div className="relative z-10">
+                        <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
+                            Ready to start selling?
+                        </h2>
+                        <p className="text-slate-400 max-w-md mx-auto mb-8">
+                            Join vendors across Rwanda. List products, get approved, and reach customers today.
+                        </p>
+                        <Link to="/register" className="btn-primary inline-flex">
+                            Create vendor account
+                        </Link>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }

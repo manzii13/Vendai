@@ -74,7 +74,8 @@ export default function Login() {
             <div className="flex-1 flex items-center justify-center p-8">
                 <div className="w-full max-w-md">
                     <div className="label mb-2"></div>
-                    <h2 className="font-display text-4xl text-white mb-8">WELCOME BACK</h2>
+                    <h2 className="font-display text-4xl font-bold text-white mb-2">Welcome back</h2>
+                    <p className="text-slate-500 text-sm mb-8">Sign in to shop or manage your store</p>
 
                     {error && (
                         <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded text-sm mb-6">
@@ -115,7 +116,7 @@ export default function Login() {
 
                     <p className="text-center text-[#555] text-sm">
                         Don't have an account?{' '}
-                        <Link to="/register" className="text-gold-400 hover:text-gold-500">
+                        <Link to="/register" className="text-brand-400 hover:text-brand-300 font-medium">
                             Create one
                         </Link>
                     </p>

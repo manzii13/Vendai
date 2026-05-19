@@ -57,7 +57,7 @@ export default function MyOrders() {
         <div className="max-w-4xl mx-auto px-6 py-12">
 
             <div className="mb-10">
-                <div className="label mb-2">// ACCOUNT</div>
+                
                 <h1 className="font-display text-5xl text-white">
                     MY ORDERS<span className="text-gold-400">.</span>
                 </h1>

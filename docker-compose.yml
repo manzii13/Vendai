@@ -1,21 +1,18 @@
-version: "3.9"
-
 services:
 
   backend:
-
-  
     build: ./backend
     ports:
       - "5000:5000"
     volumes:
       - ./backend:/app
+      - /app/node_modules
     depends_on:
       - db
     env_file: ./backend/.env
-      
     environment:
       DATABASE_URL: "postgresql://postgres:admin123@db:5432/marketplace"
+    command: sh -c "npx prisma migrate deploy && npm run db:seed && npm run dev"
 
   frontend:
     build: ./frontend
@@ -23,6 +20,7 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
 
