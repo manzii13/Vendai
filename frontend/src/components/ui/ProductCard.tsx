@@ -4,8 +4,7 @@ import { useCartStore } from '../../store/cartStore';
 import { useAuthStore } from '../../store/authStore';
 import type { Product } from '../../types';
 import { formatRWF } from '../../utils/currency';
-
-const API_BASE = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+import { uploadUrl } from '../../utils/mediaUrl';
 
 interface Props { product: Product; }
 
@@ -30,7 +29,7 @@ export default function ProductCard({ product }: Props) {
                 <div className="aspect-[4/3] bg-surface-900 overflow-hidden relative">
                     {product.images?.[0] ? (
                         <img
-                            src={`${API_BASE}${product.images[0]}`}
+                            src={uploadUrl(product.images[0])}
                             alt={product.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />

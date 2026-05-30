@@ -18,6 +18,12 @@ type Vendor = {
     } | null;
 };
 
+const FILTER_LABELS: Record<'ALL' | 'PENDING' | 'APPROVED', string> = {
+    ALL: 'All',
+    PENDING: 'Pending',
+    APPROVED: 'Approved',
+};
+
 export default function AdminVendors() {
     const [vendors, setVendors] = useState<Vendor[]>([]);
     const [loading, setLoading] = useState(true);
@@ -70,44 +76,37 @@ export default function AdminVendors() {
         return true;
     });
 
+    const filterCount = (f: typeof filter) =>
+        f === 'ALL' ? vendors.length : f === 'PENDING' ? vendors.filter(v => !v.approved).length : vendors.filter(v => v.approved).length;
+
     return (
-        <div className="p-8 max-w-[1200px]">
-            <div className="mb-8">
-                
-                <h1 className="font-display text-5xl text-white">
-                    VENDORS<span className="text-gold-400">.</span>
-                </h1>
-                <p className="text-[#555] text-sm mt-2 max-w-2xl">
+        <div className="page-shell max-w-[1200px]">
+            <header className="page-header">
+                <span className="eyebrow">Store management</span>
+                <h1>Vendors</h1>
+                <p className="hint-text mt-2 max-w-2xl">
                     Approve pending stores so vendors can list products. Revoke approval to block new listings.
                 </p>
-            </div>
+            </header>
 
             {loadError && (
-                <div className="card border-red-500/30 bg-red-500/5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <p className="font-mono text-sm text-red-400">{loadError}</p>
-                    <button
-                        type="button"
-                        onClick={() => void loadVendors()}
-                        className="font-mono text-[10px] px-4 py-2 rounded border border-red-500/40 text-red-300 hover:bg-red-500/10 shrink-0"
-                    >
-                        RETRY
+                <div className="error-banner mb-6">
+                    <p className="text-sm text-red-400">{loadError}</p>
+                    <button type="button" onClick={() => void loadVendors()} className="btn-sm-danger shrink-0">
+                        Try again
                     </button>
                 </div>
             )}
 
-            {/* Filter Tabs — default PENDING so approvals are front and center */}
             <div className="flex flex-wrap gap-2 mb-6">
                 {(['ALL', 'PENDING', 'APPROVED'] as const).map(f => (
                     <button
                         key={f}
                         type="button"
                         onClick={() => setFilter(f)}
-                        className={`font-mono text-[10px] px-4 py-2 rounded border transition-all ${filter === f
-                                ? 'bg-gold-400/10 border-gold-400/30 text-gold-400'
-                                : 'border-[#1a1a1a] text-[#555] hover:text-white'
-                            }`}
+                        className={`filter-tab ${filter === f ? 'filter-tab-active' : ''}`}
                     >
-                        {f} ({f === 'ALL' ? vendors.length : f === 'PENDING' ? vendors.filter(v => !v.approved).length : vendors.filter(v => v.approved).length})
+                        {FILTER_LABELS[f]} ({filterCount(f)})
                     </button>
                 ))}
             </div>
@@ -119,89 +118,89 @@ export default function AdminVendors() {
                     ))}
                 </div>
             ) : loadError ? null : filtered.length === 0 ? (
-                <div className="card border-[#2a2a2a] py-16 px-6 text-center max-w-xl mx-auto">
-                    <div className="font-display text-4xl text-[#333] mb-3">
-                        {vendors.length === 0 ? 'NO STORES' : 'NO MATCH'}
-                    </div>
+                <div className="empty-state">
+                    <h3 className="empty-state-title">
+                        {vendors.length === 0 ? 'No stores yet' : 'No matches'}
+                    </h3>
                     {vendors.length === 0 ? (
                         <>
-                            <p className="text-[#888] text-sm mb-4 leading-relaxed">
-                                The database has no vendor profiles yet. A store row is only created when someone registers
-                                with the <span className="text-gold-400">Vendor</span> role on sign-up.
+                            <p className="hint-text mb-6 max-w-md mx-auto">
+                                The database has no vendor profiles yet. A store is created when someone registers
+                                with the <span className="text-brand-400 font-medium">Vendor</span> role.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-6">
-                                <Link to="/register" className="btn-primary text-xs px-5 py-2.5">
+                                <Link to="/register" className="btn-primary text-sm px-5 py-2.5">
                                     Open registration
                                 </Link>
                             </div>
-                            <p className="font-mono text-[10px] text-[#555] leading-relaxed">
-                                For local development you can load demo vendors, users, and orders: in the{' '}
-                                <code className="text-gold-400/90">backend</code> folder run{' '}
-                                <code className="text-gold-400/90">npm run db:seed</code>
-                                (requires PostgreSQL and <code className="text-gold-400/90">DATABASE_URL</code> in{' '}
-                                <code className="text-gold-400/90">.env</code>), then refresh this page.
+                            <p className="hint-text text-xs max-w-md mx-auto">
+                                For local development, load demo data in the{' '}
+                                <code className="hint-code">backend</code> folder:{' '}
+                                <code className="hint-code">npm run db:seed</code>
+                                {' '}(requires PostgreSQL and <code className="hint-code">DATABASE_URL</code> in{' '}
+                                <code className="hint-code">.env</code>), then refresh.
                             </p>
                         </>
                     ) : (
-                        <p className="text-[#666] text-sm">No vendors match the &ldquo;{filter}&rdquo; filter. Try ALL or PENDING.</p>
+                        <p className="hint-text">No vendors match the &ldquo;{FILTER_LABELS[filter]}&rdquo; filter.</p>
                     )}
                 </div>
             ) : (
                 <div className="space-y-3">
                     {filtered.map(vendor => (
-                        <div key={vendor.id} className="card hover:border-[#2a2a2a] transition-all">
+                        <div key={vendor.id} className="list-row">
                             <div className="flex items-center justify-between flex-wrap gap-4">
-
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-[#111] border border-[#1a1a1a] rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <span className="font-display text-gold-400 text-lg">
-                                            {vendor.storeName?.charAt(0).toUpperCase()}
-                                        </span>
+                                    <div className="avatar-placeholder">
+                                        {vendor.storeName?.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
                                         <p className="text-white font-semibold">{vendor.storeName}</p>
-                                        <p className="text-[#ccc] text-xs mt-0.5">
+                                        <p className="text-slate-300 text-sm mt-0.5">
                                             {vendor.user?.name ?? '—'}
                                         </p>
-                                        <p className="text-[#555] text-xs">{vendor.user?.email}</p>
-                                        <div className="flex items-center gap-3 mt-1">
-                                            <span className="font-mono text-[9px] text-[#444]">
-                                                {vendor._count?.products || 0} PRODUCTS
-                                            </span>
-                                            <span className="font-mono text-[9px] text-[#444]">
-                                                JOINED {vendor.user?.createdAt ? new Date(vendor.user.createdAt).toLocaleDateString() : 'N/A'}
+                                        <p className="text-slate-500 text-sm">{vendor.user?.email}</p>
+                                        <div className="flex items-center gap-4 mt-1.5 text-xs text-slate-500">
+                                            <span>{vendor._count?.products || 0} products</span>
+                                            <span>
+                                                Joined{' '}
+                                                {vendor.user?.createdAt
+                                                    ? new Date(vendor.user.createdAt).toLocaleDateString()
+                                                    : 'N/A'}
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="flex items-center gap-3">
-                                    <span className={`font-mono text-[10px] px-3 py-1 rounded border ${vendor.approved
-                                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                                            : 'bg-amber-500/10 border-amber-500/30 text-amber-400 animate-pulse'
-                                        }`}>
-                                        {vendor.approved ? '✓ APPROVED' : '⏳ PENDING'}
+                                    <span
+                                        className={`status-badge ${
+                                            vendor.approved
+                                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                                                : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+                                        }`}
+                                    >
+                                        {vendor.approved ? 'Approved' : 'Pending'}
                                     </span>
 
                                     {!vendor.approved ? (
                                         <button
                                             type="button"
                                             onClick={() => approve(vendor.id, vendor.storeName)}
-                                            className="font-mono text-[10px] bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-4 py-2 rounded hover:bg-emerald-500/20 transition-all"
+                                            className="btn-sm-success"
                                         >
-                                            ✓ APPROVE
+                                            Approve
                                         </button>
                                     ) : (
                                         <button
                                             type="button"
                                             onClick={() => reject(vendor.id, vendor.storeName)}
-                                            className="font-mono text-[10px] bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-2 rounded hover:bg-red-500/20 transition-all"
+                                            className="btn-sm-danger"
                                         >
-                                            ✕ REVOKE
+                                            Revoke
                                         </button>
                                     )}
                                 </div>
-
                             </div>
                         </div>
                     ))}

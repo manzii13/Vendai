@@ -9,7 +9,34 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+const corsOrigins = new Set(
+    [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:5175',
+        process.env.FRONTEND_URL,
+    ].filter((o): o is string => Boolean(o))
+);
+
+function isAllowedOrigin(origin: string | undefined): boolean {
+    if (!origin) return true;
+    if (corsOrigins.has(origin)) return true;
+    // Vite may use the next free port (5174, 5175, …) when 5173 is taken
+    return /^https?:\/\/localhost(:\d+)?$/.test(origin);
+}
+
+app.use(
+    cors({
+        origin(origin, callback) {
+            if (isAllowedOrigin(origin)) {
+                callback(null, origin ?? true);
+            } else {
+                callback(new Error(`CORS blocked origin: ${origin}`));
+            }
+        },
+        credentials: true,
+    })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

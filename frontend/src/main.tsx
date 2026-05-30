@@ -31,8 +31,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <Toaster
         position="top-right"
         toastOptions={{
-          style: { background: '#131820', color: '#e2e8f0', border: '1px solid #334155', borderRadius: '12px', fontFamily: 'Plus Jakarta Sans' },
-          success: { iconTheme: { primary: '#fbbf24', secondary: '#0c0f14' } },
+          style: { background: '#fff', color: '#1e293b', border: '1px solid #e2e8f0', borderRadius: '12px', fontFamily: 'Inter' },
+          success: { iconTheme: { primary: '#16a34a', secondary: '#fff' } },
         }}
       />
       <Routes>

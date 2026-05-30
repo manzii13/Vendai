@@ -16,6 +16,15 @@ const STATUS_STYLES: Record<string, string> = {
 /** Matches Prisma `OrderStatus` — show every bucket even when count is 0 */
 const STATUS_ORDER = ['ALL', 'PENDING', 'CONFIRMED', 'SHIPPED', 'DELIVERED', 'CANCELLED'] as const;
 
+const STATUS_LABELS: Record<string, string> = {
+    ALL: 'All',
+    PENDING: 'Pending',
+    CONFIRMED: 'Confirmed',
+    SHIPPED: 'Shipped',
+    DELIVERED: 'Delivered',
+    CANCELLED: 'Cancelled',
+};
+
 type Vendor = {
     storeName?: string;
 };
@@ -91,46 +100,33 @@ export default function AdminOrders() {
     const filtered = filter === 'ALL' ? orders : orders.filter(o => o.status === filter);
 
     return (
-        <div className="p-8 max-w-[1200px]">
-            <div className="mb-8">
-                
-                <h1 className="font-display text-5xl text-white">
-                    ALL ORDERS<span className="text-gold-400">.</span>
-                </h1>
-                <p className="text-[#555] text-sm mt-2">{orders.length} total orders on platform</p>
-            </div>
+        <div className="page-shell max-w-[1200px]">
+            <header className="page-header">
+                <span className="eyebrow">Fulfillment</span>
+                <h1>Orders</h1>
+                <p className="hint-text mt-2">{orders.length} total orders on the platform</p>
+            </header>
 
             {loadError && (
-                <div className="card border-red-500/30 bg-red-500/5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <p className="font-mono text-sm text-red-400">{loadError}</p>
-                    <button
-                        type="button"
-                        onClick={() => void loadOrders()}
-                        className="font-mono text-[10px] px-4 py-2 rounded border border-red-500/40 text-red-300 hover:bg-red-500/10 shrink-0"
-                    >
-                        RETRY
+                <div className="error-banner mb-6">
+                    <p className="text-sm text-red-400">{loadError}</p>
+                    <button type="button" onClick={() => void loadOrders()} className="btn-sm-danger shrink-0">
+                        Try again
                     </button>
                 </div>
             )}
 
-            {/* Filter tabs — ALL + every order lifecycle state */}
             <div className="flex gap-2 flex-wrap mb-6">
                 {STATUS_ORDER.map(s => {
-                    const count =
-                        s === 'ALL'
-                            ? orders.length
-                            : statusCounts[s] ?? 0;
+                    const count = s === 'ALL' ? orders.length : statusCounts[s] ?? 0;
                     return (
                         <button
                             key={s}
                             type="button"
                             onClick={() => setFilter(s)}
-                            className={`font-mono text-[10px] px-3 py-2 rounded border transition-all ${filter === s
-                                ? 'bg-gold-400/10 border-gold-400/30 text-gold-400'
-                                : 'border-[#1a1a1a] text-[#555] hover:text-white'
-                                }`}
+                            className={`filter-tab ${filter === s ? 'filter-tab-active' : ''}`}
                         >
-                            {s} ({count})
+                            {STATUS_LABELS[s]} ({count})
                         </button>
                     );
                 })}
@@ -141,53 +137,60 @@ export default function AdminOrders() {
                     {[...Array(5)].map((_, i) => <div key={i} className="card animate-pulse h-24" />)}
                 </div>
             ) : loadError ? null : filtered.length === 0 ? (
-                <div className="card border-[#2a2a2a] py-16 px-6 text-center max-w-xl mx-auto">
-                    <div className="font-display text-4xl text-[#333] mb-3">
-                        {orders.length === 0 ? 'NO ORDERS' : 'NO MATCH'}
-                    </div>
+                <div className="empty-state">
+                    <h3 className="empty-state-title">
+                        {orders.length === 0 ? 'No orders yet' : 'No matches'}
+                    </h3>
                     {orders.length === 0 ? (
                         <>
-                            <p className="text-[#888] text-sm mb-4 leading-relaxed">
+                            <p className="hint-text mb-4 max-w-md mx-auto">
                                 No checkout orders exist yet. Customers create orders from the marketplace checkout flow.
                             </p>
-                            <p className="font-mono text-[10px] text-[#555] mb-4">
-                                Demo data: in <code className="text-gold-400/90">backend</code> run{' '}
-                                <code className="text-gold-400/90">npm run db:seed</code> then refresh.
+                            <p className="hint-text text-xs mb-4">
+                                Demo data: in <code className="hint-code">backend</code> run{' '}
+                                <code className="hint-code">npm run db:seed</code> then refresh.
                             </p>
-                            <Link to="/marketplace" className="btn-outline text-xs inline-block px-4 py-2">
+                            <Link to="/marketplace" className="btn-outline text-sm inline-block px-4 py-2">
                                 View marketplace
                             </Link>
                         </>
                     ) : (
-                        <p className="text-[#666] text-sm">No orders with status &ldquo;{filter}&rdquo;. Pick ALL or another tab.</p>
+                        <p className="hint-text">
+                            No orders with status &ldquo;{STATUS_LABELS[filter]}&rdquo;. Try another filter.
+                        </p>
                     )}
                 </div>
             ) : (
                 <div className="space-y-3">
                     {filtered.map(order => (
-                        <div key={order.id} className="card hover:border-[#2a2a2a] transition-all">
+                        <div key={order.id} className="list-row">
                             <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
                                 <div>
-                                    <p className="font-mono text-[10px] text-[#444]">{order.id}</p>
+                                    <p className="text-xs text-slate-500 font-mono">{order.id}</p>
                                     <p className="text-white text-sm font-semibold mt-0.5">{order.user?.name}</p>
-                                    <p className="text-[#555] text-xs">{order.user?.email}</p>
+                                    <p className="text-slate-500 text-sm">{order.user?.email}</p>
                                 </div>
                                 <div className="text-right">
-                                    <div className="font-display text-2xl text-gold-400">{formatRWF(order.total)}</div>
-                                    <p className="font-mono text-[10px] text-[#444]">
-                                        {new Date(order.createdAt).toLocaleDateString()}
+                                    <div className="font-display text-2xl text-brand-400 tabular-nums">
+                                        {formatRWF(order.total)}
+                                    </div>
+                                    <p className="text-sm text-slate-500 mt-0.5">
+                                        {new Date(order.createdAt).toLocaleDateString(undefined, {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric',
+                                        })}
                                     </p>
                                 </div>
-                                <span className={`font-mono text-[10px] px-3 py-1.5 rounded border ${STATUS_STYLES[order.status]}`}>
-                                    {order.status}
+                                <span className={`status-badge ${STATUS_STYLES[order.status]}`}>
+                                    {STATUS_LABELS[order.status] ?? order.status}
                                 </span>
                             </div>
 
-                            {/* Items summary */}
                             <div className="flex flex-wrap gap-2">
                                 {order.items?.map((item: OrderItem) => (
-                                    <span key={item.id} className="font-mono text-[9px] bg-[#0a0a0a] border border-[#1a1a1a] text-[#555] px-2 py-1 rounded">
-                                        {item.product?.name} x{item.quantity} — {item.product?.vendor?.storeName}
+                                    <span key={item.id} className="order-chip">
+                                        {item.product?.name} ×{item.quantity} — {item.product?.vendor?.storeName}
                                     </span>
                                 ))}
                             </div>

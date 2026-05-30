@@ -51,122 +51,92 @@ export default function Dashboard() {
         }
     };
 
-    if (loadingStats) return (
-        <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="w-8 h-8 border-2 border-gold-400 border-t-transparent rounded-full animate-spin" />
-        </div>
-    );
+    if (loadingStats) {
+        return (
+            <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="w-8 h-8 border-2 border-market-600 border-t-transparent rounded-full animate-spin" />
+            </div>
+        );
+    }
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-12">
-
-            {/* Header */}
-            <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+            <div className="flex items-end justify-between mb-8 flex-wrap gap-4">
                 <div>
-                    
-                    <h1 className="font-display text-5xl text-white">
-                        {stats?.storeName?.toUpperCase() || 'DASHBOARD'}
-                        <span className="text-gold-400">.</span>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-market-700 mb-1">Vendor dashboard</p>
+                    <h1 className="text-3xl sm:text-4xl font-bold text-slate-900">
+                        {stats?.storeName || 'Your store'}
                     </h1>
-                    <p className="text-[#555] text-sm mt-2">
-                        Welcome back, {user?.name}
-                    </p>
+                    <p className="text-slate-600 text-sm mt-1">Welcome back, {user?.name}</p>
                 </div>
 
-                {/* Approval badge */}
-                <div className={`flex items-center gap-2 px-4 py-2 rounded border ${stats?.approved
-                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                    : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
-                    }`}>
-                    <span className={`w-2 h-2 rounded-full ${stats?.approved ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'}`} />
-                    <span className="font-mono text-[10px]">
-                        {stats?.approved ? 'STORE APPROVED' : 'PENDING APPROVAL'}
-                    </span>
+                <div
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-semibold ${
+                        stats?.approved
+                            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                            : 'bg-amber-50 border-amber-200 text-amber-800'
+                    }`}
+                >
+                    <span
+                        className={`w-2 h-2 rounded-full ${stats?.approved ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`}
+                    />
+                    {stats?.approved ? 'Store approved' : 'Pending approval'}
                 </div>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {[
-                    {
-                        label: 'TOTAL REVENUE',
-                        value: formatRWF(stats?.totalRevenue || 0),
-                        sub: 'All time',
-                        color: 'text-gold-400',
-                    },
-                    {
-                        label: 'TOTAL ORDERS',
-                        value: stats?.totalOrders || 0,
-                        sub: 'All time',
-                        color: 'text-blue-400',
-                    },
-                    {
-                        label: 'RECENT ORDERS',
-                        value: stats?.recentOrders || 0,
-                        sub: 'Last 30 days',
-                        color: 'text-emerald-400',
-                    },
-                    {
-                        label: 'PRODUCTS LISTED',
-                        value: stats?.totalProducts || 0,
-                        sub: 'Active listings',
-                        color: 'text-purple-400',
-                    },
-                ].map(stat => (
-                    <div key={stat.label} className="card">
-                        <div className="label mb-3">{stat.label}</div>
-                        <div className={`font-display text-4xl ${stat.color} mb-1`}>
-                            {stat.value}
-                        </div>
-                        <div className="font-mono text-[10px] text-[#444]">{stat.sub}</div>
+                    { label: 'Total revenue', value: formatRWF(stats?.totalRevenue || 0), sub: 'All time', color: 'text-amber-600' },
+                    { label: 'Total orders', value: stats?.totalOrders || 0, sub: 'All time', color: 'text-blue-600' },
+                    { label: 'Recent orders', value: stats?.recentOrders || 0, sub: 'Last 30 days', color: 'text-emerald-600' },
+                    { label: 'Products listed', value: stats?.totalProducts || 0, sub: 'Active listings', color: 'text-violet-600' },
+                ].map((stat) => (
+                    <div key={stat.label} className="market-card p-5">
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{stat.label}</p>
+                        <p className={`text-2xl sm:text-3xl font-bold ${stat.color} mb-1`}>{stat.value}</p>
+                        <p className="text-xs text-slate-500">{stat.sub}</p>
                     </div>
                 ))}
             </div>
 
             <div className="grid lg:grid-cols-3 gap-6">
-
-                {/* Left — AI Insights + Top Products */}
                 <div className="lg:col-span-2 space-y-6">
-
-                    {/* AI Insights Panel */}
-                    <div className="card border-gold-400/20">
-                        <div className="flex items-center justify-between mb-4">
+                    <div className="market-card p-5 sm:p-6 border-market-200">
+                        <div className="flex items-start justify-between gap-4 mb-5 flex-wrap">
                             <div>
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-gold-400">✦</span>
-                                    <div className="label text-gold-400">AI BUSINESS INSIGHTS</div>
-                                </div>
-                                <p className="text-[#555] text-xs">
+                                <h2 className="text-lg font-bold text-slate-900">AI business insights</h2>
+                                <p className="text-sm text-slate-600 mt-1">
                                     Powered by Claude — analyzes your store performance
                                 </p>
                             </div>
                             <button
+                                type="button"
                                 onClick={fetchInsights}
                                 disabled={loadingInsights || insightsFetched}
-                                className={`flex items-center gap-2 px-4 py-2 rounded text-xs font-semibold transition-all ${insightsFetched
-                                    ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 cursor-default'
-                                    : 'bg-gold-400/10 border border-gold-400/30 text-gold-400 hover:bg-gold-400/20 disabled:opacity-50'
-                                    }`}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all shrink-0 ${
+                                    insightsFetched
+                                        ? 'bg-emerald-50 border border-emerald-200 text-emerald-800 cursor-default'
+                                        : 'market-btn-outline text-sm py-2 disabled:opacity-50'
+                                }`}
                             >
                                 {loadingInsights ? (
                                     <>
-                                        <span className="w-3 h-3 border border-gold-400 border-t-transparent rounded-full animate-spin" />
+                                        <span className="w-3 h-3 border-2 border-market-600 border-t-transparent rounded-full animate-spin" />
                                         Analyzing...
                                     </>
                                 ) : insightsFetched ? (
-                                    '✓ Generated'
+                                    'Generated'
                                 ) : (
-                                    '✦ Generate Insights'
+                                    'Generate insights'
                                 )}
                             </button>
                         </div>
 
-                        {/* Insights content */}
                         {!insights && !loadingInsights && (
-                            <div className="border border-dashed border-[#2a2a2a] rounded-lg p-8 text-center">
-                                <div className="font-display text-3xl text-[#1a1a1a] mb-3">AI READY</div>
-                                <p className="text-[#444] text-sm">
-                                    Click "Generate Insights" to get AI-powered analysis of your store performance.
+                            <div className="border-2 border-dashed border-slate-200 rounded-xl p-8 text-center bg-slate-50">
+                                <p className="text-xl font-bold text-slate-800 mb-2">Ready for analysis</p>
+                                <p className="text-sm text-slate-600 max-w-md mx-auto">
+                                    Click &quot;Generate insights&quot; to get AI-powered suggestions for your store.
                                 </p>
                             </div>
                         )}
@@ -174,9 +144,9 @@ export default function Dashboard() {
                         {loadingInsights && (
                             <div className="space-y-3">
                                 {[...Array(3)].map((_, i) => (
-                                    <div key={i} className="animate-pulse">
-                                        <div className="h-3 bg-[#1a1a1a] rounded w-full mb-2" />
-                                        <div className="h-3 bg-[#1a1a1a] rounded w-4/5" />
+                                    <div key={i} className="animate-pulse space-y-2">
+                                        <div className="h-3 bg-slate-200 rounded w-full" />
+                                        <div className="h-3 bg-slate-200 rounded w-4/5" />
                                     </div>
                                 ))}
                             </div>
@@ -185,10 +155,13 @@ export default function Dashboard() {
                         {insights && (
                             <div className="space-y-3">
                                 {insights.split('\n').filter(Boolean).map((line, i) => (
-                                    <div key={i} className="flex gap-3 p-3 bg-[#0a0a0a] rounded-lg border border-[#1a1a1a]">
-                                        <span className="text-gold-400 mt-0.5 flex-shrink-0">✦</span>
-                                        <p className="text-[#aaa] text-sm leading-relaxed">
-                                            {line.replace(/^[•-]\s*/, '')}
+                                    <div
+                                        key={i}
+                                        className="flex gap-3 p-4 bg-slate-50 rounded-xl border border-slate-100"
+                                    >
+                                        <span className="w-1.5 h-1.5 rounded-full bg-market-600 mt-2 flex-shrink-0" />
+                                        <p className="text-sm text-slate-700 leading-relaxed">
+                                            {line.replace(/^[•\-*]\s*/, '')}
                                         </p>
                                     </div>
                                 ))}
@@ -196,24 +169,31 @@ export default function Dashboard() {
                         )}
                     </div>
 
-                    {/* Top Products */}
                     {stats?.topProducts && stats.topProducts.length > 0 && (
-                        <div className="card">
-                            <div className="label mb-4">// TOP PERFORMING PRODUCTS</div>
+                        <div className="market-card p-5 sm:p-6">
+                            <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 mb-4">
+                                Top performing products
+                            </h2>
                             <div className="space-y-3">
                                 {stats.topProducts.map((name, i) => (
-                                    <div key={i} className="flex items-center gap-4 p-3 bg-[#0a0a0a] rounded-lg border border-[#1a1a1a]">
-                                        <div className={`font-display text-2xl w-8 text-center ${i === 0 ? 'text-gold-400' : i === 1 ? 'text-[#888]' : 'text-[#555]'
-                                            }`}>
+                                    <div
+                                        key={i}
+                                        className="flex items-center gap-4 p-3 bg-slate-50 rounded-xl border border-slate-100"
+                                    >
+                                        <span
+                                            className={`text-lg font-bold w-8 text-center ${
+                                                i === 0 ? 'text-amber-600' : 'text-slate-400'
+                                            }`}
+                                        >
                                             {i + 1}
-                                        </div>
-                                        <div className="flex-1">
-                                            <p className="text-white text-sm font-medium">{name}</p>
-                                            <p className="font-mono text-[10px] text-[#444]">BY REVENUE</p>
+                                        </span>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-semibold text-slate-900 truncate">{name}</p>
+                                            <p className="text-xs text-slate-500">By revenue</p>
                                         </div>
                                         {i === 0 && (
-                                            <span className="font-mono text-[9px] bg-gold-400/10 border border-gold-400/30 text-gold-400 px-2 py-1 rounded">
-                                                BEST SELLER
+                                            <span className="text-[10px] font-bold uppercase bg-amber-100 text-amber-800 px-2 py-1 rounded-lg">
+                                                Best seller
                                             </span>
                                         )}
                                     </div>
@@ -221,79 +201,55 @@ export default function Dashboard() {
                             </div>
                         </div>
                     )}
-
                 </div>
 
-                {/* Right — Quick Actions */}
                 <div className="space-y-6">
-
-                    {/* Quick Actions */}
-                    <div className="card">
-                        <div className="label mb-4">// QUICK ACTIONS</div>
+                    <div className="market-card p-5 sm:p-6">
+                        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 mb-4">Quick actions</h2>
                         <div className="space-y-2">
                             <Link
                                 to="/vendor/products/add"
-                                className="flex items-center justify-between w-full p-3 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg hover:border-gold-400 transition-all group"
+                                className="flex items-center justify-between w-full p-3 bg-market-50 border border-market-200 rounded-xl hover:bg-market-100 transition-colors group"
                             >
-                                <div className="flex items-center gap-3">
-                                    <span className="text-gold-400">+</span>
-                                    <span className="text-sm text-white">Add New Product</span>
-                                </div>
-                                <span className="text-[#444] group-hover:text-gold-400 transition-colors">→</span>
+                                <span className="text-sm font-medium text-slate-900">Add new product</span>
+                                <span className="text-market-700 group-hover:translate-x-0.5 transition-transform">→</span>
                             </Link>
                             <Link
                                 to="/vendor/products"
-                                className="flex items-center justify-between w-full p-3 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg hover:border-[#2a2a2a] transition-all group"
+                                className="flex items-center justify-between w-full p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors group"
                             >
-                                <div className="flex items-center gap-3">
-                                    <span className="text-blue-400">▤</span>
-                                    <span className="text-sm text-white">Manage Products</span>
-                                </div>
-                                <span className="text-[#444] group-hover:text-white transition-colors">→</span>
+                                <span className="text-sm font-medium text-slate-900">Manage products</span>
+                                <span className="text-slate-500 group-hover:text-slate-800">→</span>
                             </Link>
                             <Link
                                 to="/marketplace"
-                                className="flex items-center justify-between w-full p-3 bg-[#0a0a0a] border border-[#1a1a1a] rounded-lg hover:border-[#2a2a2a] transition-all group"
+                                className="flex items-center justify-between w-full p-3 bg-slate-50 border border-slate-200 rounded-xl hover:bg-slate-100 transition-colors group"
                             >
-                                <div className="flex items-center gap-3">
-                                    <span className="text-emerald-400">◎</span>
-                                    <span className="text-sm text-white">View Marketplace</span>
-                                </div>
-                                <span className="text-[#444] group-hover:text-white transition-colors">→</span>
+                                <span className="text-sm font-medium text-slate-900">View marketplace</span>
+                                <span className="text-slate-500 group-hover:text-slate-800">→</span>
                             </Link>
                         </div>
                     </div>
 
-                    {/* Store Health */}
-                    <div className="card">
-                        
+                    <div className="market-card p-5 sm:p-6">
+                        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 mb-4">Store health</h2>
                         <div className="space-y-4">
                             {[
+                                { label: 'Products listed', value: stats?.totalProducts || 0, max: 10, color: 'bg-blue-500' },
+                                { label: 'Orders (30 days)', value: stats?.recentOrders || 0, max: 20, color: 'bg-emerald-500' },
                                 {
-                                    label: 'Products Listed',
-                                    value: stats?.totalProducts || 0,
-                                    max: 10,
-                                    color: 'bg-blue-400'
-                                },
-                                {
-                                    label: 'Orders (30 days)',
-                                    value: stats?.recentOrders || 0,
-                                    max: 20,
-                                    color: 'bg-emerald-400'
-                                },
-                                {
-                                    label: 'Revenue Score',
+                                    label: 'Revenue score',
                                     value: Math.min(stats?.totalRevenue || 0, 1000),
                                     max: 1000,
-                                    color: 'bg-gold-400'
+                                    color: 'bg-amber-500',
                                 },
-                            ].map(item => (
+                            ].map((item) => (
                                 <div key={item.label}>
-                                    <div className="flex justify-between mb-1">
-                                        <span className="font-mono text-[10px] text-[#555]">{item.label}</span>
-                                        <span className="font-mono text-[10px] text-[#666]">{item.value}</span>
+                                    <div className="flex justify-between mb-1.5">
+                                        <span className="text-sm font-medium text-slate-700">{item.label}</span>
+                                        <span className="text-sm font-semibold text-slate-900">{item.value}</span>
                                     </div>
-                                    <div className="h-1.5 bg-[#111] rounded-full overflow-hidden">
+                                    <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
                                         <div
                                             className={`h-full ${item.color} rounded-full transition-all duration-1000`}
                                             style={{ width: `${Math.min((item.value / item.max) * 100, 100)}%` }}
@@ -304,23 +260,21 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Tips */}
-                    <div className="card border-[#1a1a1a]">
-                        
-                        <div className="space-y-3">
+                    <div className="market-card p-5 sm:p-6 bg-market-50/50 border-market-100">
+                        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 mb-4">Tips</h2>
+                        <ul className="space-y-3">
                             {[
-                                'Add 5+ product photos to increase sales by 40%',
-                                'Use AI descriptions to save time & rank better',
-                                'Update stock regularly to avoid lost sales',
-                            ].map((tip, i) => (
-                                <div key={i} className="flex gap-2">
-                                    <span className="text-gold-400 text-xs mt-0.5 flex-shrink-0">✦</span>
-                                    <p className="text-[#555] text-xs leading-relaxed">{tip}</p>
-                                </div>
+                                'Add 5+ product photos to increase sales.',
+                                'Use AI descriptions to save time and rank better.',
+                                'Update stock regularly to avoid lost sales.',
+                            ].map((tip) => (
+                                <li key={tip} className="flex gap-3 text-sm text-slate-700 leading-relaxed">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-market-600 mt-2 flex-shrink-0" />
+                                    {tip}
+                                </li>
                             ))}
-                        </div>
+                        </ul>
                     </div>
-
                 </div>
             </div>
         </div>

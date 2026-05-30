@@ -5,8 +5,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getMe = exports.login = exports.register = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const client_1 = require("@prisma/client");
 const jwt_1 = require("../utils/jwt");
 const prisma_1 = __importDefault(require("../utils/prisma"));
+function publicErrorMessage(err, fallback) {
+    if (process.env.NODE_ENV === 'production')
+        return fallback;
+    if (err instanceof client_1.Prisma.PrismaClientInitializationError) {
+        if (err.message.includes("Can't reach database server")) {
+            return 'Cannot connect to PostgreSQL. Start Postgres, then set DATABASE_URL in backend/.env to localhost (not db) when running the API outside Docker.';
+        }
+        return err.message;
+    }
+    if (err instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+        if (err.code === 'P1001') {
+            return 'Database server unreachable. Check that PostgreSQL is running and DATABASE_URL in backend/.env is correct.';
+        }
+        if (err.code === 'P2021' || err.message.includes('does not exist')) {
+            return 'Database or tables missing. Run: cd backend && npx prisma migrate deploy';
+        }
+    }
+    if (err instanceof Error && err.message)
+        return err.message;
+    return fallback;
+}
 const register = async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
@@ -51,8 +73,8 @@ const register = async (req, res) => {
         });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Register error:', err);
+        res.status(500).json({ message: publicErrorMessage(err, 'Server error') });
     }
 };
 exports.register = register;
@@ -86,8 +108,8 @@ const login = async (req, res) => {
         });
     }
     catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Login error:', err);
+        res.status(500).json({ message: publicErrorMessage(err, 'Server error') });
     }
 };
 exports.login = login;

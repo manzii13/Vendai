@@ -11,7 +11,31 @@ const orders_1 = __importDefault(require("./routes/orders"));
 const admin_1 = __importDefault(require("./routes/admin"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)({ origin: 'http://localhost:5173', credentials: true }));
+const corsOrigins = new Set([
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    process.env.FRONTEND_URL,
+].filter((o) => Boolean(o)));
+function isAllowedOrigin(origin) {
+    if (!origin)
+        return true;
+    if (corsOrigins.has(origin))
+        return true;
+    // Vite may use the next free port (5174, 5175, …) when 5173 is taken
+    return /^https?:\/\/localhost(:\d+)?$/.test(origin);
+}
+app.use((0, cors_1.default)({
+    origin(origin, callback) {
+        if (isAllowedOrigin(origin)) {
+            callback(null, origin ?? true);
+        }
+        else {
+            callback(new Error(`CORS blocked origin: ${origin}`));
+        }
+    },
+    credentials: true,
+}));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use('/api/orders', orders_1.default);

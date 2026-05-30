@@ -1,7 +1,31 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import { Prisma } from '@prisma/client';
 import { signToken } from '../utils/jwt';
 import prisma from '../utils/prisma';
+
+function publicErrorMessage(err: unknown, fallback: string): string {
+    if (process.env.NODE_ENV === 'production') return fallback;
+
+    if (err instanceof Prisma.PrismaClientInitializationError) {
+        if (err.message.includes("Can't reach database server")) {
+            return 'Cannot connect to PostgreSQL. Start Postgres, then set DATABASE_URL in backend/.env to localhost (not db) when running the API outside Docker.';
+        }
+        return err.message;
+    }
+
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === 'P1001') {
+            return 'Database server unreachable. Check that PostgreSQL is running and DATABASE_URL in backend/.env is correct.';
+        }
+        if (err.code === 'P2021' || err.message.includes('does not exist')) {
+            return 'Database or tables missing. Run: cd backend && npx prisma migrate deploy';
+        }
+    }
+
+    if (err instanceof Error && err.message) return err.message;
+    return fallback;
+}
 
 export const register = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -53,8 +77,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
             }
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Register error:', err);
+        res.status(500).json({ message: publicErrorMessage(err, 'Server error') });
     }
 };
 
@@ -92,8 +116,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             }
         });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Login error:', err);
+        res.status(500).json({ message: publicErrorMessage(err, 'Server error') });
     }
 };
 

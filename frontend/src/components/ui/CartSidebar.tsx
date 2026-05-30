@@ -1,6 +1,8 @@
 import { useCartStore } from '../../store/cartStore';
 import { Link } from 'react-router-dom';
 import { formatRWF } from '../../utils/currency';
+import { uploadUrl } from '../../utils/mediaUrl';
+import { CartIcon } from '../market/MarketIcons';
 
 interface Props {
     open: boolean;
@@ -9,125 +11,117 @@ interface Props {
 
 export default function CartSidebar({ open, onClose }: Props) {
     const { items, removeItem, updateQty, total, count } = useCartStore();
+    const itemCount = count();
 
     return (
         <>
-            {/* Backdrop */}
             {open && (
                 <div
                     className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm"
                     onClick={onClose}
+                    aria-hidden
                 />
             )}
 
-            {/* Sidebar */}
             <div
-                className={`fixed top-0 right-0 h-full w-full max-w-md z-50 flex flex-col transition-transform duration-300 ${open
-                    ? 'translate-x-0 pointer-events-auto'
-                    : 'translate-x-full pointer-events-none'
-                    }`}
+                className={`fixed top-0 right-0 h-full w-full max-w-md z-50 flex flex-col bg-white border-l border-slate-200 shadow-2xl transition-transform duration-300 ${
+                    open ? 'translate-x-0 pointer-events-auto' : 'translate-x-full pointer-events-none'
+                }`}
             >
-
-                {/* Background Image with overlay */}
-                <div className="absolute inset-0 z-0">
-                    <div
-                        style={{
-                            backgroundImage: 'url(/hero-bg3.jpg)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            backgroundRepeat: 'no-repeat',
-                        }}
-                        className="absolute inset-0"
-                    />
-                    {/* Dark overlay so content stays readable */}
-                    <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" />
-                </div>
-
-                {/* Border */}
-                <div className="absolute inset-0 border-l border-surface-600/50 pointer-events-none z-10" />
-
-                {/* Header */}
-                <div className="relative z-20 flex items-center justify-between p-6 border-b border-[#ffffff08]">
+                <div className="flex items-center justify-between p-6 border-b border-slate-100">
                     <div>
-
-                        <div className="font-display text-2xl text-white">
-                            {count()} ITEM{count() !== 1 ? 'S' : ''}
-                        </div>
+                        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">Your cart</p>
+                        <h2 className="text-2xl font-bold text-slate-900">
+                            {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                        </h2>
                     </div>
                     <button
+                        type="button"
                         onClick={onClose}
-                        className="w-8 h-8 flex items-center justify-center text-[#555] hover:text-white border border-[#1a1a1a] hover:border-[#333] rounded transition-all"
+                        className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-slate-800 border border-slate-200 hover:border-slate-300 rounded-xl transition-all"
+                        aria-label="Close cart"
                     >
-                        ✕
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
 
-                {/* Items */}
-                <div className="relative z-20 flex-1 overflow-y-auto p-6 space-y-4">
+                <div className="flex-1 overflow-y-auto p-6 space-y-4">
                     {items.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full text-center">
-                            {/* Empty cart illustration */}
-                            <div className="w-20 h-20 border-2 border-dashed border-[#2a2a2a] rounded-full flex items-center justify-center mb-4">
-                                <span className="text-3xl">🛒</span>
+                        <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                            <div className="w-16 h-16 rounded-2xl bg-market-50 border border-market-100 flex items-center justify-center mb-4 text-market-700">
+                                <CartIcon className="w-8 h-8" />
                             </div>
-                            <div className="font-display text-4xl text-[#1a1a1a] mb-3">EMPTY</div>
-                            <p className="text-[#555] text-sm mb-6">Your cart is empty</p>
-                            <button onClick={onClose} className="btn-primary text-sm px-6 py-3">
-                                Browse Marketplace →
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Your cart is empty</h3>
+                            <p className="text-sm text-slate-500 mb-6">Add products from the marketplace to get started.</p>
+                            <button type="button" onClick={onClose} className="market-btn-primary text-sm px-6 py-3">
+                                Browse marketplace
                             </button>
                         </div>
                     ) : (
                         items.map(({ product, quantity }) => (
                             <div
                                 key={product.id}
-                                className="flex gap-4 p-3 bg-black/40 border border-[#ffffff08] rounded-lg backdrop-blur-sm hover:border-[#ffffff15] transition-all"
+                                className="flex gap-4 p-3 bg-slate-50 border border-slate-100 rounded-xl hover:border-slate-200 transition-all"
                             >
-                                {/* Image */}
-                                <div className="w-20 h-20 bg-[#111] rounded-lg overflow-hidden flex-shrink-0 border border-[#1a1a1a]">
+                                <div className="w-20 h-20 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-slate-100">
                                     {product.images?.[0] ? (
                                         <img
-                                            src={`http://localhost:5000${product.images[0]}`}
+                                            src={uploadUrl(product.images[0])}
                                             alt={product.name}
                                             className="w-full h-full object-cover"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center">
-                                            <span className="font-mono text-[8px] text-[#333]">NO IMG</span>
+                                        <div className="w-full h-full flex items-center justify-center text-xs text-slate-600">
+                                            No image
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Info */}
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-white text-sm font-medium line-clamp-1 mb-0.5">
+                                    <p className="text-slate-900 text-sm font-medium line-clamp-1 mb-0.5">
                                         {product.name}
                                     </p>
-                                    <p className="label mb-3">{product.vendor?.storeName}</p>
+                                    <p className="text-xs text-slate-500 mb-3">{product.vendor?.storeName}</p>
 
                                     <div className="flex items-center justify-between">
-                                        {/* Qty controls */}
                                         <div className="flex items-center gap-2">
                                             <button
+                                                type="button"
                                                 onClick={() => updateQty(product.id, quantity - 1)}
-                                                className="w-6 h-6 border border-[#2a2a2a] text-[#888] rounded flex items-center justify-center hover:border-gold-400 hover:text-gold-400 transition-all text-xs"
-                                            >−</button>
-                                            <span className="font-mono text-sm text-white w-4 text-center">
+                                                className="w-8 h-8 border border-slate-200 text-slate-600 rounded-lg flex items-center justify-center hover:border-market-500 hover:text-market-700 transition-all text-sm"
+                                                aria-label="Decrease quantity"
+                                            >
+                                                −
+                                            </button>
+                                            <span className="text-sm text-slate-900 w-6 text-center tabular-nums">
                                                 {quantity}
                                             </span>
                                             <button
+                                                type="button"
                                                 onClick={() => updateQty(product.id, quantity + 1)}
-                                                className="w-6 h-6 border border-[#2a2a2a] text-[#888] rounded flex items-center justify-center hover:border-gold-400 hover:text-gold-400 transition-all text-xs"
-                                            >+</button>
+                                                className="w-8 h-8 border border-slate-200 text-slate-600 rounded-lg flex items-center justify-center hover:border-market-500 hover:text-market-700 transition-all text-sm"
+                                                aria-label="Increase quantity"
+                                            >
+                                                +
+                                            </button>
                                         </div>
 
                                         <div className="flex items-center gap-3">
-                                            <span className="font-display text-lg text-gold-400">
+                                            <span className="text-lg font-bold text-market-700 tabular-nums">
                                                 {formatRWF(product.price * quantity)}
                                             </span>
                                             <button
+                                                type="button"
                                                 onClick={() => removeItem(product.id)}
-                                                className="text-[#333] hover:text-red-400 transition-colors text-xs w-5 h-5 flex items-center justify-center"
-                                            >✕</button>
+                                                className="text-slate-500 hover:text-red-400 transition-colors p-1"
+                                                aria-label="Remove item"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -136,45 +130,32 @@ export default function CartSidebar({ open, onClose }: Props) {
                     )}
                 </div>
 
-                {/* Footer */}
                 {items.length > 0 && (
-                    <div className="relative z-20 p-6 border-t border-[#ffffff08] bg-black/40 backdrop-blur-sm space-y-4">
-
-                        {/* Total */}
+                    <div className="p-6 border-t border-slate-100 bg-slate-50/80 space-y-4">
                         <div className="flex justify-between items-center">
-                            <span className="label">TOTAL</span>
-                            <span className="font-display text-3xl text-white">
+                            <span className="text-sm font-medium text-slate-500">Total</span>
+                            <span className="text-3xl font-bold text-slate-900 tabular-nums">
                                 {formatRWF(total())}
                             </span>
                         </div>
 
-                        {/* Item count summary */}
-                        <div className="flex justify-between items-center">
-                            <span className="font-mono text-[10px] text-[#444]">
-                                {count()} ITEM{count() !== 1 ? 'S' : ''} IN CART
-                            </span>
-                            <span className="font-mono text-[10px] text-emerald-400">
-                                FREE SHIPPING
-                            </span>
-                        </div>
+                        <p className="text-xs text-slate-500 text-center">
+                            {itemCount} {itemCount === 1 ? 'item' : 'items'} in cart
+                        </p>
 
                         <Link
                             to="/checkout"
                             onClick={onClose}
-                            className="btn-primary w-full text-center block py-4 text-base"
+                            className="market-btn-primary w-full text-center block py-4 text-base"
                         >
-                            Proceed to Checkout →
+                            Proceed to checkout
                         </Link>
 
-                        <button
-                            onClick={onClose}
-                            className="btn-outline w-full py-3 text-sm"
-                        >
-                            Continue Shopping
+                        <button type="button" onClick={onClose} className="market-btn-outline w-full py-3 text-sm">
+                            Continue shopping
                         </button>
                     </div>
                 )}
-
             </div>
         </>
     );

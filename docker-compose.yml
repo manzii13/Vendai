@@ -11,7 +11,7 @@ services:
       - db
     env_file: ./backend/.env
     environment:
-      DATABASE_URL: "postgresql://postgres:admin123@db:5432/marketplace"
+      DATABASE_URL: "postgresql://postgres:admin123@db:5432/vendai"
     command: sh -c "npx prisma migrate deploy && npm run db:seed && npm run dev"
 
   frontend:
@@ -30,7 +30,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin123
-      POSTGRES_DB: marketplace
+      POSTGRES_DB: vendai
     ports:
       - "5432:5432"
     volumes:

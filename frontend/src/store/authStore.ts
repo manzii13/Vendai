@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from '../services/api';
+import { getApiErrorMessage } from '../utils/apiError';
 
 interface User {
     id: string;
@@ -35,8 +36,7 @@ export const useAuthStore = create<AuthState>()(
                     localStorage.setItem('token', data.token);
                     set({ user: data.user, token: data.token, loading: false });
                 } catch (err: unknown) {
-                    const error = err as { response?: { data?: { message?: string } } };
-                    set({ error: error.response?.data?.message || 'Login failed', loading: false });
+                    set({ error: getApiErrorMessage(err, 'Login failed'), loading: false });
                 }
             },
 
@@ -47,8 +47,7 @@ export const useAuthStore = create<AuthState>()(
                     localStorage.setItem('token', data.token);
                     set({ user: data.user, token: data.token, loading: false });
                 } catch (err: unknown) {
-                    const error = err as { response?: { data?: { message?: string } } };
-                    set({ error: error.response?.data?.message || 'Registration failed', loading: false });
+                    set({ error: getApiErrorMessage(err, 'Registration failed'), loading: false });
                 }
             },
 
